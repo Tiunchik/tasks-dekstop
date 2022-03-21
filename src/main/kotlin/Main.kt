@@ -1,9 +1,8 @@
 // Copyright 2000-2021 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -25,6 +24,8 @@ import kotlinx.coroutines.delay
  * https://github.com/JetBrains/compose-jb/tree/master/tutorials
  */
 
+val suppliedList: Sequence<String> = generateSequence("start") { it + 2 }
+
 fun main() = application {
     Window(
         onCloseRequest = { this.exitApplication() }
@@ -37,13 +38,13 @@ fun main() = application {
 @Preview
 fun App() {
     MaterialTheme() {
-        Element()
+        ManyElements(suppliedList)
     }
 }
 
 @Composable
-fun Element() {
-    var newName by remember { mutableStateOf("none") }
+fun Element(name: String) {
+    var newName by remember { mutableStateOf(name) }
     Column {
         Surface(
             color = MaterialTheme.colors.primary,
@@ -54,18 +55,33 @@ fun Element() {
         }
         TextField(
             value = newName,
-            onValueChange = { newName = it })
+            onValueChange = { change -> newName = change }
+        )
+        Spacer(Modifier.padding(3.dp))
+        SubmitPostButton(newName, "Some url for $newName")
     }
 }
 
 @Composable
-fun ManyElements() {
-    Column {
-
+fun ManyElements(names: Sequence<String>) {
+    LazyColumn() {
+        items(names.take(50).toList()) {
+            Element(it)
+        }
     }
 }
 
 @Composable
 fun Greetings(name: String) {
     Text(text = "Hello $name!")
+}
+
+@Composable
+fun SubmitPostButton(data: Any, url: String) {
+    Button(
+        onClick = {
+        println("I send data $data to $url")
+    }) {
+        Text(text = "Submit")
+    }
 }
