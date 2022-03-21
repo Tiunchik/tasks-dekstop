@@ -5,14 +5,19 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.ApplicationScope
 import androidx.compose.ui.window.Tray
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
@@ -22,60 +27,32 @@ import kotlinx.coroutines.delay
  * https://github.com/JetBrains/compose-jb/tree/master/tutorials
  */
 
-@Composable
-@Preview
-fun App() {
-    var text by remember { mutableStateOf("Hello, World!") }
-    var count = remember { mutableStateOf(0) }
-    LaunchedEffect(Unit) {
-        while (true) {
-            count.value++
-            delay(1000)
-        } 
-    }
-    MaterialTheme {
-        
-        Row(Modifier.fillMaxSize(), Arrangement.Center,  Alignment.CenterVertically) {
-            Button(onClick = {
-                text = "Hello, Desktop!"
-            }) {
-                Text(text)
-            }
-            Button(onClick = {
-                count.value++
-            }) {
-                Text("Increase ${count.value}")
-            }
-        }
-    }
-}
-
 fun main() = application {
-    var isVisible by remember { mutableStateOf(true) }
     Window(
-        onCloseRequest = { isVisible = false },
-        visible = isVisible,
-        title = "My first App"
+        onCloseRequest =  { this.exitApplication() }
     ) {
         App()
     }
-    if (!isVisible) {
-        Tray(
-            icon = TryIcon,
-            tooltip = "TestApp",
-            onAction = { isVisible = true },
-            menu = {
-                Item("Show", onClick = { isVisible = true})
-                Item("Exit", onClick = ::exitApplication)
-            }
-        )
+}
+
+@Composable
+@Preview
+fun App() {
+    MaterialTheme() {
+        Element()
     }
 }
 
-object TryIcon : Painter() {
-    override val intrinsicSize: Size = Size(256f, 256f)
-
-    override fun DrawScope.onDraw() {
-        drawRect(Color.Red)
+@Composable
+fun Element(){
+    Surface(
+        color = MaterialTheme.colors.primary,
+    elevation = 4.dp) {
+        Greetings("Windows")
     }
+}
+
+@Composable
+fun Greetings(name: String) {
+    Text(text = "Hello $name!")
 }
