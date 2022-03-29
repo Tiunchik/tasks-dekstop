@@ -1,81 +1,59 @@
 // Copyright 2000-2021 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.Surface
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.window.Tray
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
-import kotlinx.coroutines.delay
+import com.arkivanov.decompose.extensions.compose.jetbrains.Children
+import com.arkivanov.decompose.router.pop
+import com.arkivanov.decompose.router.push
+import database.Database
+import database.DatabaseImp
+import decompose.config.Pages
+import decompose.config.rememberRouter
 
 /**
  * https://github.com/JetBrains/compose-jb/tree/master/tutorials
+ *
+ * router links https://proandroiddev.com/a-comprehensive-hundred-line-navigation-for-jetpack-desktop-compose-5b723c4f256e
+ *              https://github.com/JetBrains/compose-jb/blob/master/tutorials/Navigation/README.md
  */
 
 @Composable
 @Preview
-fun App() {
-    var text by remember { mutableStateOf("Hello, World!") }
-    var count = remember { mutableStateOf(0) }
-    LaunchedEffect(Unit) {
-        while (true) {
-            count.value++
-            delay(1000)
-        } 
-    }
-    MaterialTheme {
-        
-        Row(Modifier.fillMaxSize(), Arrangement.Center,  Alignment.CenterVertically) {
-            Button(onClick = {
-                text = "Hello, Desktop!"
-            }) {
-                Text(text)
-            }
-            Button(onClick = {
-                count.value++
-            }) {
-                Text("Increase ${count.value}")
-            }
-        }
+fun Root(database: Database) {
+    val router = rememberRouter<Pages>(
+        initialConfiguration = { Pages.List }
+    )
+    return Children(routerState = router.state) { page ->
+        when (val currentPage = page.configuration) {
+            is Pages.List ->
+                ItemListScreen(
+                    database.getAll(),
+                    onItemClick = { router.push(Pages.Details(id = it)) }
+                )
+            is Pages.Details ->
+                ItemDetailScreen(
+                    database.getById(currentPage.id),
+                    onClickBack = router::pop
+                )
+        }.let {}
     }
 }
+
 
 fun main() = application {
-    var isVisible by remember { mutableStateOf(true) }
     Window(
-        onCloseRequest = { isVisible = false },
-        visible = isVisible,
-        title = "My first App"
+        onCloseRequest = ::exitApplication,
+        title = "My first App with Decompose Router"
     ) {
-        App()
-    }
-    if (!isVisible) {
-        Tray(
-            icon = TryIcon,
-            tooltip = "TestApp",
-            onAction = { isVisible = true },
-            menu = {
-                Item("Show", onClick = { isVisible = true})
-                Item("Exit", onClick = ::exitApplication)
+        Surface(modifier = Modifier.fillMaxSize()) {
+            MaterialTheme {
+                Root(DatabaseImp())
             }
-        )
-    }
-}
-
-object TryIcon : Painter() {
-    override val intrinsicSize: Size = Size(256f, 256f)
-
-    override fun DrawScope.onDraw() {
-        drawRect(Color.Red)
+        }
     }
 }
