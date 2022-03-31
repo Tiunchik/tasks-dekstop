@@ -1,4 +1,4 @@
-package decompose.config
+package config.decompose
 
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize

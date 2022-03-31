@@ -12,8 +12,14 @@ import com.arkivanov.decompose.router.pop
 import com.arkivanov.decompose.router.push
 import database.Database
 import database.DatabaseImp
-import decompose.config.Pages
-import decompose.config.rememberRouter
+import config.decompose.Pages
+import config.decompose.rememberRouter
+import config.koin.koinModule
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import org.koin.core.context.startKoin
+import org.koin.java.KoinJavaComponent.inject
+import javax.xml.crypto.Data
 
 /**
  * https://github.com/JetBrains/compose-jb/tree/master/tutorials
@@ -24,7 +30,9 @@ import decompose.config.rememberRouter
 
 @Composable
 @Preview
-fun Root(database: Database) {
+fun Root() {
+    //val imageManager = object: KoinComponent {val im: Database by inject<Database>()}.im
+    val database by inject<Database>(Database::class.java)
     val router = rememberRouter<Pages>(
         initialConfiguration = { Pages.List }
     )
@@ -46,13 +54,16 @@ fun Root(database: Database) {
 
 
 fun main() = application {
+    startKoin {
+        modules(koinModule)
+    }
     Window(
         onCloseRequest = ::exitApplication,
         title = "My first App with Decompose Router"
     ) {
         Surface(modifier = Modifier.fillMaxSize()) {
             MaterialTheme {
-                Root(DatabaseImp())
+                Root()
             }
         }
     }

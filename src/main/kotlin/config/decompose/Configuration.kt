@@ -1,4 +1,4 @@
-package decompose.config
+package config.decompose
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect

@@ -23,6 +23,11 @@ dependencies {
 
     implementation("com.arkivanov.decompose:decompose:0.5.2")
     implementation("com.arkivanov.decompose:extensions-compose-jetbrains:0.5.2")
+
+
+    // Koin for Kotlin apps
+    implementation("io.insert-koin:koin-core:3.1.5")
+    testImplementation ("io.insert-koin:koin-test:3.1.5")
 }
 
 tasks.test {
