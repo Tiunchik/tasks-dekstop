@@ -1,13 +1,17 @@
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import models.Item
+import models.Task
 
 @Composable
-fun ItemDetailScreen(item: Item, onClickBack: () -> Unit) {
+fun ItemDetailScreen(item: Task, onClickBack: () -> Unit) {
     Column {
         TopAppBar(
             title = { Text("Item details")},
@@ -25,9 +29,16 @@ fun ItemDetailScreen(item: Item, onClickBack: () -> Unit) {
             shape = MaterialTheme.shapes.medium,
             color = MaterialTheme.colors.primary
         ) {
-            Text(
-                text = item.text
-            )
+            Column {
+                Text(
+                    text = item.name
+                )
+                Spacer(Modifier.size(4.dp))
+                Text(
+                    text = item.description
+                )
+            }
+
         }
     }
 }

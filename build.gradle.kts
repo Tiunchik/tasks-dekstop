@@ -23,6 +23,10 @@ dependencies {
 
     implementation("com.arkivanov.decompose:decompose:0.5.2")
     implementation("com.arkivanov.decompose:extensions-compose-jetbrains:0.5.2")
+    implementation ("io.reactivex.rxjava3:rxjava:3.1.4")
+
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
 
     // Koin for Kotlin apps

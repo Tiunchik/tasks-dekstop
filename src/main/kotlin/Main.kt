@@ -11,15 +11,13 @@ import com.arkivanov.decompose.extensions.compose.jetbrains.Children
 import com.arkivanov.decompose.router.pop
 import com.arkivanov.decompose.router.push
 import database.Database
-import database.DatabaseImp
 import config.decompose.Pages
 import config.decompose.rememberRouter
 import config.koin.koinModule
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
+import models.Task
 import org.koin.core.context.startKoin
 import org.koin.java.KoinJavaComponent.inject
-import javax.xml.crypto.Data
+import retrofit.TaskController
 
 /**
  * https://github.com/JetBrains/compose-jb/tree/master/tutorials
@@ -31,8 +29,7 @@ import javax.xml.crypto.Data
 @Composable
 @Preview
 fun Root() {
-    //val imageManager = object: KoinComponent {val im: Database by inject<Database>()}.im
-    val database by inject<Database>(Database::class.java)
+    val database by inject<TaskController>(TaskController::class.java)
     val router = rememberRouter<Pages>(
         initialConfiguration = { Pages.List }
     )
@@ -40,12 +37,12 @@ fun Root() {
         when (val currentPage = page.configuration) {
             is Pages.List ->
                 ItemListScreen(
-                    database.getAll(),
+                    database.getAllTasks().execute().body() ?: ArrayList<Task>(),
                     onItemClick = { router.push(Pages.Details(id = it)) }
                 )
             is Pages.Details ->
                 ItemDetailScreen(
-                    database.getById(currentPage.id),
+                    database.getOneTask(currentPage.id).execute().body() ?: Task(),
                     onClickBack = router::pop
                 )
         }.let {}

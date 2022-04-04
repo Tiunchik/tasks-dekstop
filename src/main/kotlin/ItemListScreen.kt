@@ -4,14 +4,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import models.Item
+import models.Task
 
 @Composable
-fun ItemListScreen(itemsList: List<Item>, onItemClick: (id: Long) -> Unit) {
+fun ItemListScreen(itemsList: List<Task>, onItemClick: (id: Long) -> Unit) {
     LazyColumn {
         items(itemsList) {it ->
             Text(
-                text = it.text,
+                text = it.name,
                 modifier = Modifier.clickable { onItemClick(it.id) }
             )
         }

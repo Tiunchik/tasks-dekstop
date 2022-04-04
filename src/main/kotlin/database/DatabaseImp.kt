@@ -12,7 +12,7 @@ class DatabaseImp : Database {
         Item(4, "Test Text for item 4"),
     )
 
-    override fun getAll(): List<Item> = data
+    override fun getAllTasks(): List<Item> = data
 
-    override fun getById(id: Long): Item = data.first { it.id == id }
+    override fun getOneTask(id: Long): Item = data.first { it.id == id }
 }
