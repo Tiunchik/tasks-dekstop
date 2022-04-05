@@ -9,7 +9,7 @@ import models.Task
 @Composable
 fun ItemListScreen(itemsList: List<Task>, onItemClick: (id: Long) -> Unit) {
     LazyColumn {
-        items(itemsList) {it ->
+        items(itemsList) {
             Text(
                 text = it.name,
                 modifier = Modifier.clickable { onItemClick(it.id) }

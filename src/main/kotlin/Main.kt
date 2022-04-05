@@ -10,14 +10,15 @@ import androidx.compose.ui.window.application
 import com.arkivanov.decompose.extensions.compose.jetbrains.Children
 import com.arkivanov.decompose.router.pop
 import com.arkivanov.decompose.router.push
-import database.Database
 import config.decompose.Pages
 import config.decompose.rememberRouter
 import config.koin.koinModule
+import kotlinx.coroutines.delay
 import models.Task
 import org.koin.core.context.startKoin
 import org.koin.java.KoinJavaComponent.inject
 import retrofit.TaskController
+import service.TaskService
 
 /**
  * https://github.com/JetBrains/compose-jb/tree/master/tutorials
@@ -29,7 +30,22 @@ import retrofit.TaskController
 @Composable
 @Preview
 fun Root() {
-    val database by inject<TaskController>(TaskController::class.java)
+    val controller by inject<TaskController>(TaskController::class.java)
+
+    var list by remember { mutableStateOf(listOf<Task>()) }
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            var cache = listOf<Task>()
+            controller.getAllTasks().execute().body()?.let { cache = it }
+            list = cache
+            delay(5_000)
+        }
+
+    }
+
+
+
     val router = rememberRouter<Pages>(
         initialConfiguration = { Pages.List }
     )
@@ -37,12 +53,12 @@ fun Root() {
         when (val currentPage = page.configuration) {
             is Pages.List ->
                 ItemListScreen(
-                    database.getAllTasks().execute().body() ?: ArrayList<Task>(),
+                   list,
                     onItemClick = { router.push(Pages.Details(id = it)) }
                 )
             is Pages.Details ->
                 ItemDetailScreen(
-                    database.getOneTask(currentPage.id).execute().body() ?: Task(),
+                    controller.getOneTask(currentPage.id).execute().body() ?: Task(),
                     onClickBack = router::pop
                 )
         }.let {}
@@ -54,6 +70,7 @@ fun main() = application {
     startKoin {
         modules(koinModule)
     }
+
     Window(
         onCloseRequest = ::exitApplication,
         title = "My first App with Decompose Router"
