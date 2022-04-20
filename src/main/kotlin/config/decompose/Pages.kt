@@ -6,8 +6,11 @@ import com.arkivanov.essenty.parcelable.Parcelize
 sealed class Pages: Parcelable {
 
     @Parcelize
-    object List: Pages()
+    object TaskList: Pages()
 
     @Parcelize
-    data class Details(val id: Long): Pages()
+    object TaskCreate: Pages()
+
+    @Parcelize
+    data class TaskDetails(val id: Long): Pages()
 }

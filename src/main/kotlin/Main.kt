@@ -27,50 +27,11 @@ import service.TaskService
  *              https://github.com/JetBrains/compose-jb/blob/master/tutorials/Navigation/README.md
  */
 
-@Composable
-@Preview
-fun Root() {
-    val controller by inject<TaskController>(TaskController::class.java)
-
-    var list by remember { mutableStateOf(listOf<Task>()) }
-
-    LaunchedEffect(Unit) {
-        while (true) {
-            var cache = listOf<Task>()
-            controller.getAllTasks().execute().body()?.let { cache = it }
-            list = cache
-            delay(5_000)
-        }
-
-    }
-
-
-
-    val router = rememberRouter<Pages>(
-        initialConfiguration = { Pages.List }
-    )
-    return Children(routerState = router.state) { page ->
-        when (val currentPage = page.configuration) {
-            is Pages.List ->
-                ItemListScreen(
-                   list,
-                    onItemClick = { router.push(Pages.Details(id = it)) }
-                )
-            is Pages.Details ->
-                ItemDetailScreen(
-                    controller.getOneTask(currentPage.id).execute().body() ?: Task(),
-                    onClickBack = router::pop
-                )
-        }.let {}
-    }
-}
-
 
 fun main() = application {
     startKoin {
         modules(koinModule)
     }
-
     Window(
         onCloseRequest = ::exitApplication,
         title = "My first App with Decompose Router"
